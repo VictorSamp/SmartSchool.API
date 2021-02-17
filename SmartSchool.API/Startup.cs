@@ -1,3 +1,5 @@
+using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -21,15 +23,17 @@ namespace SmartSchool.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<SmartContext>(
-                    context => context.UseSqlite(Configuration.GetConnectionString("Default"))
-                );
-
-            services.AddScoped<IRepository, Repository>();
+                context => context.UseSqlite(Configuration.GetConnectionString("Default"))
+            );
 
             services.AddControllers()
                     .AddNewtonsoftJson(
                         opt => opt.SerializerSettings.ReferenceLoopHandling =
-                                Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                            Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddScoped<IRepository, Repository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,9 +44,11 @@ namespace SmartSchool.API
                 app.UseDeveloperExceptionPage();
             }
 
+            // app.UseHttpsRedirection();
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
