@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SmartSchool.API.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using SmartSchool.API.Models;
 
 namespace SmartSchool.API.Data
 {
     public class Repository : IRepository
     {
         private readonly SmartContext _context;
-
         public Repository(SmartContext context)
         {
             _context = context;
@@ -30,11 +29,10 @@ namespace SmartSchool.API.Data
 
         public bool SaveChanges()
         {
-            _context.SaveChanges();
             return (_context.SaveChanges() > 0);
         }
 
-        public Aluno[] GetAllAlunos(bool includeProfessor)
+        public Aluno[] GetAllAlunos(bool includeProfessor = false)
         {
             IQueryable<Aluno> query = _context.Alunos;
 
@@ -46,6 +44,7 @@ namespace SmartSchool.API.Data
             }
 
             query = query.AsNoTracking().OrderBy(a => a.Id);
+
             return query.ToArray();
         }
 
@@ -63,6 +62,7 @@ namespace SmartSchool.API.Data
             query = query.AsNoTracking()
                          .OrderBy(a => a.Id)
                          .Where(aluno => aluno.AlunosDisciplinas.Any(ad => ad.DisciplinaId == disciplinaId));
+
             return query.ToArray();
         }
 
@@ -92,7 +92,7 @@ namespace SmartSchool.API.Data
             {
                 query = query.Include(p => p.Disciplinas)
                              .ThenInclude(d => d.AlunosDisciplinas)
-                             .ThenInclude(ad => ad.AlunoId);
+                             .ThenInclude(ad => ad.Aluno);
             }
 
             query = query.AsNoTracking().OrderBy(p => p.Id);
@@ -115,7 +115,7 @@ namespace SmartSchool.API.Data
                          .OrderBy(aluno => aluno.Id)
                          .Where(aluno => aluno.Disciplinas.Any(
                              d => d.AlunosDisciplinas.Any(ad => ad.DisciplinaId == disciplinaId)
-                          ));
+                         ));
 
             return query.ToArray();
         }

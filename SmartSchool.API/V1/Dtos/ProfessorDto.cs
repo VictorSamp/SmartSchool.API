@@ -1,4 +1,6 @@
-﻿namespace SmartSchool.API.Dtos
+using System;
+
+namespace SmartSchool.API.V1.Dtos
 {
     public class ProfessorDto
     {
